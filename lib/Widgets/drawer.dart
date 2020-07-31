@@ -48,10 +48,48 @@ class MainDrawer extends StatelessWidget {
             height: MediaQuery.of(context).size.height - 120 - 20,
             child: ListView.builder(
               itemBuilder: (cnt, index) {
-                if (index == numOfQues)
-                  return buildListTile(context, 'Submit', index);
+                if (index == 0)
+                  return Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          FlatButton(
+                            color: Colors.blue,
+                            padding: EdgeInsets.all(10),
+                            onPressed: () => changeIndex(numOfQues),
+                            child: Text(
+                              'Submit',
+                              style: GoogleFonts.quando(
+                                fontSize: 15,
+                                // fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          FlatButton(
+                            color: Colors.red,
+                            padding: EdgeInsets.all(10),
+                            onPressed: () => changeIndex(-10),
+                            child: Text(
+                              'Quit',
+                              style: GoogleFonts.quando(
+                                fontSize: 15,
+                                // fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  );
+                // buildListTile(context, 'Submit', index);
                 else {
-                  return buildListTile(context, 'Question ${index + 1}', index);
+                  return buildListTile(context, 'Question $index', index - 1);
                 }
               },
               itemCount: numOfQues + 1,

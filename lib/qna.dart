@@ -53,8 +53,37 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
     );
   }
 
+  void quit() async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('You clicked the Quit Button!'),
+          content: Text('Do you really want to quit?'),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('No'),
+            ),
+            FlatButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                ans = {};
+                Navigator.pop(context);
+                sendans();
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   void sendans() {
     submit = true;
+    print(ans);
     print('Bye');
   }
 
@@ -80,7 +109,7 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
       });
     } else if (quesno == ques.length) {
       submitRequest();
-    }
+    } else if (quesno == -10) quit();
   }
 
   @override
@@ -126,6 +155,8 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final dropdownItem =
+        List<String>.generate(ques.length, (index) => (index + 1).toString());
     _controller.forward();
     final bottomNav = Container(
       key: bottomNavKey,
@@ -158,28 +189,30 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   Expanded(
-                    child: TextField(
-                      controller: _textcontroller,
-                      autofocus: false,
-                      decoration: InputDecoration(
-                        hintText: (qid + 1).toString(),
-                      ),
-                      keyboardType: TextInputType.number,
-                      onSubmitted: (String value) {
-                        var quesid = int.parse(value) - 1;
-                        if (quesid < ques.length && quesid >= 0)
-                          gotoQuestion(quesid);
-                        else {
-                          Fluttertoast.showToast(
-                            msg: "Invalid Question Number",
-                            toastLength: Toast.LENGTH_SHORT,
-                            backgroundColor: Colors.grey[800],
-                            textColor: Colors.white,
-                          );
-                        }
-                      },
+                      child: DropdownButton<String>(
+                    value: (qid + 1).toString(),
+                    icon: Icon(null),
+                    elevation: 16,
+                    underline: Container(
+                      height: 0,
                     ),
-                  ),
+                    onChanged: (String value) {
+                      var quesid = int.parse(value) - 1;
+                      if (quesid < ques.length && quesid >= 0)
+                        gotoQuestion(quesid);
+                      else {
+                        Fluttertoast.showToast(
+                          msg: "Invalid Question Number",
+                          toastLength: Toast.LENGTH_SHORT,
+                          backgroundColor: Colors.grey[800],
+                          textColor: Colors.white,
+                        );
+                      }
+                    },
+                    items: dropdownItem.map((e) {
+                      return DropdownMenuItem(value: e, child: Text(e));
+                    }).toList(),
+                  )),
                 ],
               ),
             ),
