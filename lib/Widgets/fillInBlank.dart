@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 class FillInBlank extends StatefulWidget {
   final handler;
-  final ans;
-  FillInBlank(this.handler, this.ans);
+  var ans;
+  FillInBlank(this.handler, ans) {
+    if (ans is String)
+      this.ans = ans;
+    else
+      ans = '';
+  }
 
   @override
   _FillInBlankState createState() => _FillInBlankState();
@@ -31,8 +36,9 @@ class _FillInBlankState extends State<FillInBlank> {
           hintText: 'Type your Answer here',
         ),
         onEditingComplete: () {
-          print(_controller.text);
           FocusScope.of(context).unfocus();
+        },
+        onChanged: (value) {
           widget.handler(_controller.text);
         },
       ),

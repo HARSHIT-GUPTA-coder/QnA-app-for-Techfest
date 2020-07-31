@@ -16,8 +16,8 @@ class MainDrawer extends StatelessWidget {
         ),
       ),
       onTap: () {
-        changeIndex(quesId);
         Navigator.of(context).pop();
+        changeIndex(quesId);
       },
     );
   }
