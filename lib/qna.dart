@@ -1,8 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import './Widgets/timer.dart';
+import './Widgets/fillInBlank.dart';
 import './models/ques.dart';
 import './Widgets/answerList.dart';
 import './Widgets/drawer.dart';
@@ -58,6 +58,10 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
     print('Bye');
   }
 
+  void fillBlank(String s) {
+    ans[ques[qid]['id']] = s;
+  }
+
   void clickAns(var index) {
     setState(() {
       if (ans[ques[qid]['id']] == index)
@@ -79,23 +83,9 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
     }
   }
 
-  void starttimer() async {
-    Timer.periodic(Duration(seconds: 1), (Timer t) {
-      setState(() {
-        if (timer < Duration(seconds: 1) || submit) {
-          sendans();
-          t.cancel();
-        } else {
-          timer = timer - Duration(seconds: 1);
-        }
-      });
-    });
-  }
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
-    starttimer();
     ques.shuffle();
     for (var q = 0; q < ques.length; q++) {
       ans[ques[q]['id']] = -1;
@@ -128,6 +118,10 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
     setState(() {
       extraHeight = renderBottom.size.height + renderQues.size.height;
     });
+  }
+
+  getsubmit() {
+    return submit;
   }
 
   @override
@@ -199,7 +193,7 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
     );
     final PreferredSizeWidget appBar = AppBar(
       centerTitle: true,
-      title: Text(timer.toString().substring(0, 7)),
+      title: QuizTimer(sendans, getsubmit),
       actions: <Widget>[
         FlatButton(
           child: Text(
@@ -281,8 +275,10 @@ class _QnAstate extends State<QnA> with SingleTickerProviderStateMixin {
                               appBar.preferredSize.height -
                               MediaQuery.of(context).padding.top -
                               extraHeight),
-                          child: AnswerList(clickAns, ques[qid]['options'],
-                              ans[ques[qid]['id']]),
+                          child: ques[qid]['questype'] == 'mcq'
+                              ? AnswerList(clickAns, ques[qid]['options'],
+                                  ans[ques[qid]['id']])
+                              : FillInBlank(fillBlank, ans[ques[qid]['id']]),
                         )
                       ],
                     ),
